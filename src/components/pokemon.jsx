@@ -72,7 +72,7 @@ function Pokemon() {
             />
             <datalist id="pokemon-list">
                 {filteredPokemon.map((p, index) => (
-                    <option key={index} value={p.name} />
+                    <option key={index} value={p.name.charAt(0).toUpperCase() + p.name.slice(1)} />
                 ))}
             </datalist>
             <button
@@ -87,7 +87,7 @@ function Pokemon() {
             </button>
             {selectedPokemon && (
                 <div className='pokemon-details'>
-                    <h2>{selectedPokemon.name}</h2>
+                    <h2>{selectedPokemon.name.charAt(0).toUpperCase() + selectedPokemon.name.slice(1)}</h2>
                     <img
                         src={selectedPokemon.sprites.front_default}
                         alt={selectedPokemon.name}
