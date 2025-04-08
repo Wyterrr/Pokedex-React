@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import './pokemon.css'; // Assurez-vous d'importer le fichier CSS
+import './pokemon.css';
 
 function Pokemon() {
     const [pokemon, setPokemon] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [search, setSearch] = useState('');
-    const [selectedPokemon, setSelectedPokemon] = useState(null); // État pour le Pokémon sélectionné
+    const [selectedPokemon, setSelectedPokemon] = useState(null); 
 
     useEffect(() => {
         const fetchAllPokemon = async () => {
@@ -21,7 +21,7 @@ function Pokemon() {
                     }
                     const data = await response.json();
                     allPokemon = [...allPokemon, ...data.results];
-                    nextUrl = data.next; // URL de la page suivante
+                    nextUrl = data.next; 
                 }
     
                 setPokemon(allPokemon);
