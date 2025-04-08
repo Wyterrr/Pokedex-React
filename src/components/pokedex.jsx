@@ -8,17 +8,20 @@ function Pokemon() {
   const [search, setSearch] = useState("");
   const [selectedPokemon, setSelectedPokemon] = useState(null);
   const [pokemonImages, setPokemonImages] = useState({});
+  const [pokemonTypes, setPokemonTypes] = useState({});
 
   useEffect(() => {
-    const fetchFirstTenPokemon = async () => {
+    const fetchPokemon = async () => {
       try {
-        const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=500");
+        const response = await fetch(
+          "https://pokeapi.co/api/v2/pokemon?limit=1100"
+        );
         if (!response.ok) {
           throw new Error("La connexion ne marche pas");
         }
         const data = await response.json();
         setPokemon(data.results);
-        await fetchAllPokemonImages(data.results);
+        await fetchAllPokemonImagesAndTypes(data.results);
       } catch (error) {
         setError(error);
       } finally {
@@ -26,11 +29,12 @@ function Pokemon() {
       }
     };
 
-    fetchFirstTenPokemon();
+    fetchPokemon();
   }, []);
 
-  const fetchAllPokemonImages = async (pokemonList) => {
+  const fetchAllPokemonImagesAndTypes = async (pokemonList) => {
     const images = {};
+    const types = {};
     for (const pokemon of pokemonList) {
       try {
         const response = await fetch(pokemon.url);
@@ -39,11 +43,13 @@ function Pokemon() {
         }
         const data = await response.json();
         images[pokemon.name] = data.sprites.front_default;
+        types[pokemon.name] = data.types.map((typeInfo) => typeInfo.type.name);
       } catch (error) {
         setError(error);
       }
     }
     setPokemonImages(images);
+    setPokemonTypes(types);
   };
 
   const fetchPokemonDetails = async (url) => {
@@ -73,7 +79,7 @@ function Pokemon() {
 
   return (
     <div>
-      <h1>Pokemon List</h1>
+      <h1>PokeWewene</h1>
       <input
         type="text"
         list="pokemon-list"
@@ -101,29 +107,47 @@ function Pokemon() {
       >
         Show Details
       </button>
-      {selectedPokemon && (
-        <div className="pokemon-details">
-          <h2>
-            {selectedPokemon.name.charAt(0).toUpperCase() +
-              selectedPokemon.name.slice(1)}
-          </h2>
-          <img
-            src={selectedPokemon.sprites.front_default}
-            alt={selectedPokemon.name}
-          />
-          <p>Height: {selectedPokemon.height}</p>
-          <p>Weight: {selectedPokemon.weight}</p>
-        </div>
-      )}
-      <div className="pokedex">
-        <div className="pokemon-images">
-          {filteredPokemon.map((p, index) => (
+      <button
+        onClick={() => {
+          setSelectedPokemon(null);
+          setSearch("");
+        }}
+      >
+        X
+      </button>
+      <div className="container-pokedex">
+        {selectedPokemon && (
+          <div className="pokemon-details">
+            <h2>
+              {selectedPokemon.name.charAt(0).toUpperCase() +
+                selectedPokemon.name.slice(1)}
+            </h2>
             <img
-              key={index}
-              src={pokemonImages[p.name]}
-              alt={p.name}
+              src={selectedPokemon.sprites.front_default}
+              alt={selectedPokemon.name}
             />
-          ))}
+            <p>Height: {selectedPokemon.height}</p>
+            <p>Weight: {selectedPokemon.weight}</p>
+            <p>
+              Types:{" "}
+              {selectedPokemon.types.map((typeInfo) => typeInfo.type.name).join(", ")}
+            </p>
+          </div>
+        )}
+        <div className="pokedex">
+          <div className="pokemon-images">
+            {filteredPokemon.map((p, index) => (
+              <div
+                className="card-pokemon"
+                key={index}
+                onClick={() => fetchPokemonDetails(p.url)}
+              >
+                <img src={pokemonImages[p.name]} alt={p.name} />
+                <h3>{p.name.charAt(0).toUpperCase() + p.name.slice(1)}</h3>
+                <p>Types : {pokemonTypes[p.name]?.join(", ")}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

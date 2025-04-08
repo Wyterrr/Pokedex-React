@@ -1,4 +1,4 @@
-import Pokemon from './components/pokemon.jsx'
+import Pokemon from './components/pokedex.jsx'
 function App() {
 
   return (
